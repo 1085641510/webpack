@@ -53,10 +53,10 @@ var app = new vue({
             this.allData.sort((a,b)=>{
                 return a.width*a.height-b.width*b.height;
             });
-            console.log(this.allData)
+            return this.allData;
         },
         initCanvas(data) {
-            
+        
             var moveCanvas = document.getElementById("myCanvas1");
             var ctx = moveCanvas.getContext("2d");
 
@@ -231,7 +231,8 @@ var app = new vue({
             ele.onmouseup = (ev)=>{  
                 ctx.clearRect(0,0,ele.width,ele.height); 
                 this.allData[i].checked = false; 
-                this.initCanvas(this.allData);  
+                this.initCanvas(this.allData);
+                this.trimData()  
                 ele.onmousemove = null;  
                 ele.onmouseup = null;  
             };
@@ -291,7 +292,8 @@ var app = new vue({
             ele.onmouseup = (ev)=>{  
                 ctx.clearRect(0,0,ele.width,ele.height); 
                 this.allData[i].checked = false; 
-                this.initCanvas(this.allData);  
+                this.initCanvas(this.allData);
+                this.trimData()  
                 ele.onmousemove = null;  
                 ele.onmouseup = null;  
             };
@@ -345,7 +347,8 @@ var app = new vue({
             ele.onmouseup = (ev)=>{  
                 ctx.clearRect(0,0,ele.width,ele.height); 
                 this.allData[i].checked = false; 
-                this.initCanvas(this.allData);  
+                this.initCanvas(this.allData); 
+                this.trimData() 
                 ele.onmousemove = null;  
                 ele.onmouseup = null;  
             };
@@ -389,7 +392,8 @@ var app = new vue({
             ele.onmouseup = (ev)=>{  
                 ctx.clearRect(0,0,ele.width,ele.height); 
                 this.allData[i].checked = false; 
-                this.initCanvas(this.allData);  
+                this.initCanvas(this.allData); 
+                this.trimData() 
                 ele.onmousemove = null;  
                 ele.onmouseup = null;  
             };
@@ -424,7 +428,8 @@ var app = new vue({
             ele.onmouseup = (ev)=>{  
                 ctx.clearRect(0,0,ele.width,ele.height); 
                 this.allData[i].checked = false; 
-                this.initCanvas(this.allData);  
+                this.initCanvas(this.allData);
+                this.trimData()  
                 ele.onmousemove = null;  
                 ele.onmouseup = null;  
             };
