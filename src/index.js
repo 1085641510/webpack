@@ -1,9 +1,7 @@
 // import myName from './hello';
 require('./style/index.css');
 import vue from "vue"
-// import jsplumb from "jsplumb"
-const arr = [1, 24, 5, 6, 61, 717, 677];
-const hhjj = [...arr];
+
 
 
 var app = new vue({
@@ -15,6 +13,10 @@ var app = new vue({
     // },
     data:{
         message:'hello',
+        limit:{
+            width:50,
+            height:50
+        },
         allData:[{
             x:20,
             y:10,
@@ -127,12 +129,42 @@ var app = new vue({
                     
             }
             //鼠标按下，将鼠标按下坐标保存在x,y中  
-            //createBlock(50,50);  
+            
+
             moveCanvas.onmousedown = (ev)=>{  
                 var e = ev||event;  
                 var x = e.clientX;  
                 var y = e.clientY;  
-                this.drag(x,y,ctx,moveCanvas,...data);  
+                let eleOffsetLeft = moveCanvas.offsetLeft;
+                let eleOffsetTop = moveCanvas.offsetTop;
+
+                for(let i=0;i<data.length;i++){
+                    let contX=x-eleOffsetLeft-data[i].x;
+                    let contY=y-eleOffsetTop-data[i].y;
+
+                    if(contX<=data[i].width&&contX>=0&&contY>=0&&contY<=data[i].height){ 
+                        if(contX<=data[i].width&&contX>=data[i].width-8&&contY<=data[i].height&&contY>=data[i].height-8){
+                            console.log('位置:'+i)
+                            this.scaleRightBottom(x,y,ctx,moveCanvas,i,...data);  
+                        }
+                        else if(contX<=data[i].width&&contX>=data[i].width-8&&contY<=8&&contY>=0){
+                            console.log('位置:'+i)
+                            this.scaleRightTop(x,y,ctx,moveCanvas,i,...data);  
+                        }
+                        else if(contX<=8&&contX>=0&&contY<=8&&contY>=0){
+                            this.scaleLeftTop(x,y,ctx,moveCanvas,i,...data);
+                        }
+                        else if(contX<=8&&contX>=0&&contY<=data[i].height&&contY>=data[i].height-8){
+                            this.scaleLeftBottom(x,y,ctx,moveCanvas,i,...data);
+                        }
+                        else{
+                            console.log("gggg")
+                            this.drag(x,y,ctx,moveCanvas,i,...data); 
+                        }
+                        return;
+                    }
+                }
+                
             };  
             moveCanvas.ondblclick=(ev)=>{
                 for(let i=0;i<this.allData.length;i++){
@@ -149,73 +181,321 @@ var app = new vue({
         moveCanvas(ele){
             
         },
-        
-        //拖拽函数  
-        drag(x,y,ctx,ele,...arg){  
+        scaleLeftBottom(x,y,ctx,ele,i,...arg){
             let eleOffsetLeft = ele.offsetLeft;
             let eleOffsetTop = ele.offsetTop;
+            let offtX=x-eleOffsetLeft-arg[i].x;
+            let offtY=y-eleOffsetTop-arg[i].y;
+            let fx = this.allData[i].width-offtX;
+            let fy = this.allData[i].height-offtY;
+            let absoY = arg[i].y;
+            let absoX = arg[i].x;
+            let absoH = arg[i].height;
+            let absoW = arg[i].width;
+            let RX =  arg[i].x+arg[i].width;
+            let RY =  arg[i].y+arg[i].height;
+            ele.onmousemove = (ev)=>{  
+                var e = ev||event;  
+                var ax = e.clientX;  
+                var ay = e.clientY;  
+               
+                //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+                ctx.clearRect(0,0,ele.width,ele.height);
+            
+                console.log("left-bottom")
+                this.allData[i].x = absoX+ax-x;
+                
+                this.allData[i].width = absoW+x-ax;
+                this.allData[i].height = absoH+ay-y;
+
+                // 判断元素是否太小               
+                
+                if(this.allData[i].width<this.limit.width){
+                    
+                     this.allData[i].width =this.limit.width
+                     this.allData[i].x = RX-this.limit.width;
+                     
+                }
+                if(this.allData[i].height<this.limit.height){
+                     this.allData[i].height =this.limit.height
+                     this.allData[i].y = RY-this.limit.height;
+
+                }
+                this.allData[i].checked = true;
+                this.initCanvas(this.allData);
+                
+               
+                
+            };  
+            //鼠标移开事件  
+            ele.onmouseup = (ev)=>{  
+                ctx.clearRect(0,0,ele.width,ele.height); 
+                this.allData[i].checked = false; 
+                this.initCanvas(this.allData);  
+                ele.onmousemove = null;  
+                ele.onmouseup = null;  
+            };
+        },
+        scaleLeftTop(x,y,ctx,ele,i,...arg){
+            let eleOffsetLeft = ele.offsetLeft;
+            let eleOffsetTop = ele.offsetTop;
+            let offtX=x-eleOffsetLeft-arg[i].x;
+            let offtY=y-eleOffsetTop-arg[i].y;
+            let fx = this.allData[i].width-offtX;
+            let fy = this.allData[i].height-offtY;
+            let absoY = arg[i].y;
+            let absoX = arg[i].x;
+            let absoH = arg[i].height;
+            let absoW = arg[i].width;
+
+            let RX =  arg[i].x+arg[i].width;
+            let RY =  arg[i].y+arg[i].height;
+            ele.onmousemove = (ev)=>{  
+                var e = ev||event;  
+                var ax = e.clientX;  
+                var ay = e.clientY;  
+               
+                //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+                ctx.clearRect(0,0,ele.width,ele.height);
+            
+                console.log("left-top")
+               
+        
+                this.allData[i].x = absoX+ax-x;
+                this.allData[i].y =absoY+ay-y;
+
+                this.allData[i].width = absoW+x-ax;
+                this.allData[i].height = absoH+y-ay;
+                
+              
+                
+                // 判断元素是否太小               
+                 
+                if(this.allData[i].width<this.limit.width){
+                    
+                     this.allData[i].width =this.limit.width
+                     this.allData[i].x = RX-this.limit.width;
+                     
+                }
+                if(this.allData[i].height<this.limit.height){
+                     this.allData[i].height =this.limit.height
+                     this.allData[i].y = RY-this.limit.height;
+
+                }
+                
+                this.allData[i].checked = true;
+                this.initCanvas(this.allData); 
+                
+            };  
+            //鼠标移开事件  
+            ele.onmouseup = (ev)=>{  
+                ctx.clearRect(0,0,ele.width,ele.height); 
+                this.allData[i].checked = false; 
+                this.initCanvas(this.allData);  
+                ele.onmousemove = null;  
+                ele.onmouseup = null;  
+            };
+        },
+        scaleRightTop(x,y,ctx,ele,i,...arg){
+            let eleOffsetLeft = ele.offsetLeft;
+            let eleOffsetTop = ele.offsetTop;
+            let offtX=x-eleOffsetLeft-arg[i].x;
+            let offtY=y-eleOffsetTop-arg[i].y;
+            let fx = this.allData[i].width-offtX;
+            let fy = this.allData[i].height-offtY;
+            let absoY = arg[i].y;
+            let absoH = arg[i].height;
+            let absoW = arg[i].width;
+            let LX =  arg[i].x;
+            let LY =  arg[i].y;
+            ele.onmousemove = (ev)=>{  
+                var e = ev||event;  
+                var ax = e.clientX;  
+                var ay = e.clientY;  
+               
+                //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+                ctx.clearRect(0,0,ele.width,ele.height);
+            
+                console.log("right-top")
+               
+               
+                this.allData[i].y =absoY+ay-y;
+                
+                this.allData[i].width = absoW+ax-x;
+                this.allData[i].height = absoH + y-ay;
+                // 判断元素是否太小               
+                
+                if(this.allData[i].width<this.limit.width){
+                    
+                     this.allData[i].width =this.limit.width
+                     this.allData[i].x = LX;
+                     
+                }
+                if(this.allData[i].height<this.limit.height){
+                     this.allData[i].height =this.limit.height
+                     this.allData[i].y = LY;
+
+                }
+                
+                this.allData[i].checked = true;
+                this.initCanvas(this.allData); 
+                
+            };  
+            //鼠标移开事件  
+            ele.onmouseup = (ev)=>{  
+                ctx.clearRect(0,0,ele.width,ele.height); 
+                this.allData[i].checked = false; 
+                this.initCanvas(this.allData);  
+                ele.onmousemove = null;  
+                ele.onmouseup = null;  
+            };
+        },
+        scaleRightBottom(x,y,ctx,ele,i,...arg){
+            let eleOffsetLeft = ele.offsetLeft;
+            let eleOffsetTop = ele.offsetTop;
+            let offtX=x-eleOffsetLeft-arg[i].x;
+            let offtY=y-eleOffsetTop-arg[i].y;
+            let fx = this.allData[i].width-offtX;
+            let fy = this.allData[i].height-offtY;
+            ele.onmousemove = (ev)=>{  
+                var e = ev||event;  
+                var ax = e.clientX;  
+                var ay = e.clientY;  
+                let contX2=ax-eleOffsetLeft-arg[i].x;
+                let contY2=ay-eleOffsetTop-arg[i].y;
+                
+                //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+                ctx.clearRect(0,0,ele.width,ele.height);
+            
+                console.log("right-bottom")
+                this.allData[i].width = contX2+ fx;
+                this.allData[i].height = contY2+ fy;
+                
+                // 判断元素是否太小               
+                
+                if(this.allData[i].width<this.limit.width){
+                     this.allData[i].width =this.limit.width
+                }
+                if(this.allData[i].height<this.limit.height){
+                     this.allData[i].height =this.limit.height
+
+                }
+                
+                this.allData[i].checked = true;
+                this.initCanvas(this.allData); 
+                
+            };  
+            //鼠标移开事件  
+            ele.onmouseup = (ev)=>{  
+                ctx.clearRect(0,0,ele.width,ele.height); 
+                this.allData[i].checked = false; 
+                this.initCanvas(this.allData);  
+                ele.onmousemove = null;  
+                ele.onmouseup = null;  
+            };
+        },
+        //拖拽函数  
+        drag(x,y,ctx,ele,i,...arg){ 
+            let eleOffsetLeft = ele.offsetLeft;
+            let eleOffsetTop = ele.offsetTop;
+            let offtX=x-eleOffsetLeft-arg[i].x;
+            let offtY=y-eleOffsetTop-arg[i].y;
+            ele.onmousemove = (ev)=>{  
+                var e = ev||event;  
+                var ax = e.clientX;  
+                var ay = e.clientY;  
+                let contX2=ax-eleOffsetLeft-arg[i].x;
+                let contY2=ay-eleOffsetTop-arg[i].y;
+                
+                //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+                ctx.clearRect(0,0,ele.width,ele.height);
+                
+                this.allData[i].x = ax-eleOffsetLeft-offtX;
+                this.allData[i].y = ay-eleOffsetTop-offtY;
+              
+
+
+                
+                this.allData[i].checked = true;
+                this.initCanvas(this.allData); 
+                
+            };  
+            //鼠标移开事件  
+            ele.onmouseup = (ev)=>{  
+                ctx.clearRect(0,0,ele.width,ele.height); 
+                this.allData[i].checked = false; 
+                this.initCanvas(this.allData);  
+                ele.onmousemove = null;  
+                ele.onmouseup = null;  
+            };
+
+
+
+
+            // let eleOffsetLeft = ele.offsetLeft;
+            // let eleOffsetTop = ele.offsetTop;
           
-            for(let i=0;i<arg.length;i++){
-                let offtX = x-eleOffsetLeft-arg[i].x;
-                let offtY = y-eleOffsetTop-arg[i].y; 
-                let contX=x-eleOffsetLeft-arg[i].x;
-                let contY=y-eleOffsetTop-arg[i].y;
-                let fx = this.allData[i].width-offtX;
-                let fy = this.allData[i].height-offtY;
-                //x-eleOffsetLeft-arg[i].x<=200&&x-eleOffsetLeft-arg[i].x>=0&&y-eleOffsetTop-arg[i].y>=0&&y-eleOffsetTop-arg[i].y<=100
-                if(contX<=arg[i].width&&contX>=0&&contY>=0&&contY<=arg[i].height){  
-                    //路径正确，鼠标移动事件  
-                    ele.onmousemove = (ev)=>{  
-                        var e = ev||event;  
-                        var ax = e.clientX;  
-                        var ay = e.clientY;  
-                        let contX2=ax-eleOffsetLeft-arg[i].x;
-                        let contY2=ay-eleOffsetTop-arg[i].y;
+            // for(let i=0;i<arg.length;i++){
+            //     let offtX = x-eleOffsetLeft-arg[i].x;
+            //     let offtY = y-eleOffsetTop-arg[i].y; 
+            //     let contX=x-eleOffsetLeft-arg[i].x;
+            //     let contY=y-eleOffsetTop-arg[i].y;
+            //     let fx = this.allData[i].width-offtX;
+            //     let fy = this.allData[i].height-offtY;
+            //     //x-eleOffsetLeft-arg[i].x<=200&&x-eleOffsetLeft-arg[i].x>=0&&y-eleOffsetTop-arg[i].y>=0&&y-eleOffsetTop-arg[i].y<=100
+            //     //if(contX<=arg[i].width&&contX>=0&&contY>=0&&contY<=arg[i].height){  
+            //         //路径正确，鼠标移动事件  
+            //         ele.onmousemove = (ev)=>{  
+            //             var e = ev||event;  
+            //             var ax = e.clientX;  
+            //             var ay = e.clientY;  
+            //             let contX2=ax-eleOffsetLeft-arg[i].x;
+            //             let contY2=ay-eleOffsetTop-arg[i].y;
                        
-                        //鼠标移动每一帧都清楚画布内容，然后重新画圆  
-                        ctx.clearRect(0,0,ele.width,ele.height);
-                        console.log(ax-x)
-                        if(contX2<=8&&contY2<=8){
-                            console.log("left-top")
+            //             //鼠标移动每一帧都清楚画布内容，然后重新画圆  
+            //             ctx.clearRect(0,0,ele.width,ele.height);
+            //             // console.log(ax-x)
+            //             // if(contX2<=8&&contY2<=8){
+            //             //     console.log("left-top")
                             
 
-                        }
-                        else if(contX2<=arg[i].width+8&&contY2<=8){
-                            console.log("right-top")
-                        }
+            //             // }
+            //             // else if(contX2<=arg[i].width+8&&contY2<=8){
+            //             //     console.log("right-top")
+            //             // }
                        
-                        else if(contX2<=this.allData[i].width){
-                            //ele.style.cursor="move"
-                            console.log("right-bottom")
-                            this.allData[i].width = contX2+ fx;
-                            this.allData[i].height = contY2+fy;
-                        }
-                        else if(contX2<=8&&contY2>=arg[i].height-8){
-                            console.log("left-bottom")
+            //             // else if(contX2<=this.allData[i].width){
+            //             //     //ele.style.cursor="move"
+            //             //     console.log("right-bottom")
+            //             //     this.allData[i].width = contX2+ fx;
+            //             //     this.allData[i].height = contY2+fy;
+            //             // }
+            //             // else if(contX2<=8&&contY2>=arg[i].height-8){
+            //             //     console.log("left-bottom")
                             
-                        }
-                        else{
-                            this.allData[i].x = ax-eleOffsetLeft-offtX;
-                            this.allData[i].y = ay-eleOffsetTop-offtY;
-                        }
+            //             // }
+            //             //else{
+            //                 this.allData[i].x = ax-eleOffsetLeft-offtX;
+            //                 this.allData[i].y = ay-eleOffsetTop-offtY;
+            //             //}
 
 
                         
-                        this.allData[i].checked = true;
-                        this.initCanvas(this.allData); 
+            //             this.allData[i].checked = true;
+            //             this.initCanvas(this.allData); 
                        
-                    };  
-                    //鼠标移开事件  
-                    ele.onmouseup = (ev)=>{  
-                        ctx.clearRect(0,0,ele.width,ele.height); 
-                        this.allData[i].checked = false; 
-                        this.initCanvas(this.allData);  
-                        ele.onmousemove = null;  
-                        ele.onmouseup = null;  
-                    };  
-                    return; 
-                }
-            }
+            //         };  
+            //         //鼠标移开事件  
+            //         ele.onmouseup = (ev)=>{  
+            //             ctx.clearRect(0,0,ele.width,ele.height); 
+            //             this.allData[i].checked = false; 
+            //             this.initCanvas(this.allData);  
+            //             ele.onmousemove = null;  
+            //             ele.onmouseup = null;  
+            //         };  
+            //         return; 
+            //     //}
+            // }
            
         }  
     },
