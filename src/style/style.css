@@ -40,6 +40,23 @@ a:hover {
 a {
     display: flex;
 }
-.mmm{
-    color: #145188;
+#menu{
+    width: 800px;
+    height: 50px;
+    background: gray;
+}
+.clearfix:after{
+    content: "";
+    display: table;
+    clear: both;
+}
+#menu div{
+    float: left;
+    width: 80px;
+    height: 50px;
+    background: yellowgreen;
+    margin-right: 20px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
 }
