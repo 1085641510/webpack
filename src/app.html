@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>js</title>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<header>
+                {{title}}
+            </header>
+            <section>
+                <div class="showArea" v-for="(item,index) in showlist" :key="index">
+                    <h2>{{index+1}}、{{item.name}}</h2>
+                    <div class="controlArea">
+                        <div class="inputArea">
+                            <input type="text" v-model="item.value"/>
+                            <span v-if="item.value1||item.value1===''">{{item.operator}}<input type="text" v-model="item.value1"/></span>
+                            <span v-for="list in item.type">
+                                <input type="radio" :id="'radio'+list.id" name="sort" v-model="item.typeId" :value="list.id" >
+                                <label :for="'radio'+list.id">{{list.name}}</label>
+                            </span>
+                            <span class="button" @click="item.methods(item)">开始</span>
+                        </div>
+                        <div class="result">
+                            <p>{{item.originalValue}}</p>
+                            <p>{{item.result}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="es6"> 
+                    <h2>es6</h2>
+                    <div style="padding: 20px;">
+                        <p>promise</p>
+                        <button @click="runPromise">start</button>
+                        <p>
+                            Promise对象有以下两个特点。
+
+                            （1）对象的状态不受外界影响。Promise对象代表一个异步操作，有三种状态：pending（进行中）、fulfilled（已成功）和rejected（已失败）。只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是Promise这个名字的由来，它的英语意思就是“承诺”，表示其他手段无法改变。
+
+                            （2）一旦状态改变，就不会再变，任何时候都可以得到这个结果。Promise对象的状态改变，只有两种可能：从pending变为fulfilled和从pending变为rejected。只要这两种情况发生，状态就凝固了，不会再变了，会一直保持这个结果，这时就称为 resolved（已定型）。如果改变已经发生了，你再对Promise对象添加回调函数，也会立即得到这个结果。这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。
+                        </p>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>构造函数</p>
+                        <button @click="runConstructor('wpq','23','web')">start</button>
+                        <p>
+                            <h3>什么是原型?</h3>
+                            <p>每个对象都会有个_proto_属性，函数对象会有prototype属性。原型对象：也就是函数的prototype。
+                            在默认情况下，所有的原型对象都会自动获得一个 constructor（构造函数）属性，这个属性（是一个指针）指向 prototype 属性所在的函数（Person）
+                            <p style="color: red">
+                                构造函数产生的实例对象不是原型对象，但实例对象会继承原型对象
+                            </p>
+                            
+                            </p>
+                            <h3>什么是构造函数?</h3>
+                            <p>构造函数通过new ，他会新建一个实例对象，它函数内部的this指向这个对象，而普通函数则不会，他的this指向调用这个函数的实例，若没有，则指向window</p>
+                            <p>构造函数内部只能返回数组、对象、函数，基本类型null,undefined,string,number不能被返回，返回的为构造函数的实例对象</p>
+                            <p>js在创建对象（不论是普通对象还是函数对象）的时候，都有一个叫做__proto__ 的内置属性，用于指向创建它的构造函数的原型对象。对象 person1 有一个 __proto__属性，创建它的构造函数是 Person，构造函数的原型对象是 Person.prototype ，所以：person1.__proto__ == Person.prototype</p>
+                            <p style="color: red">
+                                总结：所有普通对象的__proto__ === Object.prototype,函数对象的__proto__ === Function.prototype;</br>
+                                对象的__proto__都指向它的构造函数的prototype;</br>
+                                Function.prototype为一个函数对象；
+                                Array.prototype.__proto__为Object.prototype；
+                                Object.prototype.__proto__为null,它属于顶端
+
+                            </p>
+                            <p></p>
+                            <p></p>
+                        
+                        
+                        
+                        
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <footer>
+
+            </footer>
+		</div>
+	</body>
+</html>
+
+
